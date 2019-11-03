@@ -31,9 +31,62 @@ public:
         // x0 直接返回
         int n = s.size();
         vector<int> dp(n + 1, 0);
-        for (int i = 1; i <= n; i++) {
-            
+        dp[0] = 1;
+        for (int i = 0; i < n; i++) {
+            // 可以用一个数表示
+            if (s[i] != '0') {
+                dp[i+1] = dp[i];
+            }
+            if (i > 0) {
+                // 可以用两个数表示
+                if (s[i - 1] == '1' || (s[i - 1] == '2' && s[i] <= '6')) {
+                    dp[i + 1] += dp[i-1];
+                }
+            }
         }
         return dp[n];
     }
 };
+
+class Solution {
+public:
+    int numDecodings(string s) {
+        // 11~19 22~26 dp[n] = dp[n - 2] + dp[n - 1]
+        // 10 20 dp[n] = dp[n - 2]
+        // x0 直接返回
+        int n = s.size();
+        vector<int> dp(n, 0);
+        if (n >= 1) {
+            int i = 0;
+            if (s[0] != '0') {
+                dp[0] = 1;
+            }
+        }
+        if (n >= 2) {
+            int i = 1;
+            if (s[i] == '0' && (s[i - 1] == '1' || s[i - 1] == '2')) {
+                dp[i] = 1;
+            } else if (s[i] == '0') {
+                dp[i] = 0;
+            } else if ((s[i -1] == '1') || (s[i - 1] == '2' && s[i] <= '6')) {
+                dp[i] = 2;
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        for (int i = 2; i < n; i++) {
+            // 可以用一个数表示
+            if (s[i] == '0' && (s[i - 1] == '1' || s[i - 1] == '2')) {
+                dp[i] = dp[i - 2];
+            } else if (s[i] == '0') {
+                dp[i] = 0;
+            } else if ((s[i -1] == '1') || (s[i - 1] == '2' && s[i] <= '6')) {
+                dp[i] = dp[i - 2] + dp[i - 1];
+            } else {
+                dp[i] = dp[i - 1];
+            }
+        }
+        return dp[n - 1];
+    }
+};
+
