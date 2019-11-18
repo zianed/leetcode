@@ -62,6 +62,9 @@ public:
     }
 };
 
+// 广度优先解法
+
+
 
 // 并查集
 class DisjoinSet {

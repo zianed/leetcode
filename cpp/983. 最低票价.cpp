@@ -45,3 +45,31 @@ costs.length == 3
 链接：https://leetcode-cn.com/problems/minimum-cost-for-tickets
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 **/
+
+// 动态规划问题
+// 初始化所有日期为0
+// 状态方程 dp[n] = min(dp[n-1] + cost1, dp[n - 7] + costt7, dp[n - 30] + cost30)
+class Solution {
+public:
+    int mincostTickets(vector<int>& days, vector<int>& costs) {
+        // 找到最大的日期
+        int m = days.back();
+        vector<int> dp(m + 1, 0);
+        for (int d : days) {
+            dp[d] = -1;
+        }
+        for (int i = 1; i <= m; i++) {
+            if (dp[i] == 0) {
+                // 当天没有旅行不需要花钱
+                dp[i] = dp[i-1];
+            } else {
+                int a = dp[i - 1] + costs[0];
+                int b = (i >= 7 ? dp[i - 7] : 0) + costs[1];
+                int c = (i >= 30 ? dp[i - 30] : 0) + costs[2];
+                dp[i] = min(min(a, b), c);
+            }
+        }
+        return dp[m];
+    }
+};
+
