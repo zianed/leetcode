@@ -36,24 +36,50 @@
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 **/
 
+// 暴力破解
 class Solution {
 public:
     vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        if (k <= 1) {
+            return nums;
+        }
         vector<int> res;
         int len = nums.size();
-        queue<int> qInt;
-        for (int i = 0; i < len; i++) {
-            qInt.push(nums[0]);
-            int v = qInt.front();
-            while (!qInt.empty() && v < nums[i]) {
-                qInt.pop();
-                v = qInt.front();
+        for (int i = k - 1; i < len; i++) {
+            int v = nums[i - k + 1];
+            for (int j = i - k + 2; j <= i; j++) {
+                v = max(v, nums[j]);
             }
-            if (i >= k -1) {
-                res.push_back(qInt.front(););
-            }
+            res.push_back(v);
         }
         return res;
     }
 };
 
+// 双向队列
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        if (k <= 1) {
+            return nums;
+        }
+        vector<int> res;
+        int len = nums.size();
+        deque<int> qInt;
+        for (int i = 0; i < len; i++) {
+            // 把后面比他小的值都干掉
+            while (!qInt.empty() && nums[qInt.back()] < nums[i]) {
+                qInt.pop_back();
+            }
+            // 把前面下标超过i - k + 1的也干掉
+            while (!qInt.empty() && qInt.front() < i - k + 1) {
+                qInt.pop_front();
+            }
+            qInt.push_back(i);
+            if (i >= k -1) {
+                res.push_back(nums[qInt.front()]);
+            }
+        }
+        return res;
+    }
+};
