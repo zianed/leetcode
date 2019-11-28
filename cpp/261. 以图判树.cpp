@@ -18,15 +18,59 @@
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 **/
 
+// bfs搜索
 class Solution {
 public:
     bool validTree(int n, vector<vector<int>>& edges) {
-        map<int, set<int>> mPath;
-        vector<int> degree(n, 0);
+        vector<vector<int>> graph(n, vector<int>(n, 0));
+        // 把邻接表转换为临接矩阵
         for (auto &v: edges) {
-            mPath[v[0].insert(v[1]);
-            degree[v[1]]++;
+            graph[v[0]][v[1]] = 1;
+            graph[v[1]][v[0]] = 1;
         }
         vector<bool> visited(n, false);
+        queue<int> qPath;
+        qPath.push(0);
+        visited[0] = true;
+        while (!qPath.empty()) {
+            int i = qPath.front();
+            qPath.pop();
+            for (int j = 0; j < n; j++) {
+                if (graph[i][j] == 1) {
+                    // 对向节点已经被访问过了，说明有环路出现，不能构成树
+                    if (visited[j]) {
+                        return false;
+                    }
+                    graph[i][j] = 0;
+                    graph[j][i] = 0;
+                    qPath.push(j);
+                    visited[j] = true;
+                }
+            }
+        }
+        // 从一个点开始，所有节点都被访问过了，才能构成一棵树，否则就是多棵树
+        for (int i = 0; i < n; i++) {
+            if (!visited[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 };
+
+// 并查集，联通的节点都放到一个集合
+// 如果有两个的 父节点相同，那么他们是环路
+// 如果最终的集合个数不是1，说明不是1颗树
+class DisjoinSet {
+    DisjoinSet(int n)
+    {
+    }
+};
+
+class Solution {
+public:
+    bool validTree(int n, vector<vector<int>>& edges) {
+         
+    }
+};
+
