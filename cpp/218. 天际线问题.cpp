@@ -26,6 +26,31 @@
 class Solution {
 public:
     vector<vector<int>> getSkyline(vector<vector<int>>& buildings) {
-        
+        vector<vector<int>> res;
+        multiset<pair<int, int>> buildSet;
+        for (auto &v : buildings) {
+            buildSet.insert(pair<int, int>(v[0], -v[2]));
+            buildSet.insert(pair<int, int>(v[1], v[2]));
+        }
+        multiset<int> heights = { 0 };
+        // 上一次的高度
+        int lasth = 0;
+        for (auto &b : buildSet) {
+            if (b.second < 0) {
+                // 起始点加入
+                heights.insert(-b.second);
+            } else {
+                // 终止点中将该点值删除
+                heights.erase(heights.find(b.second));
+            }
+            int h = *heights.rbegin();
+            if (lasth != h) {
+                // 高度不相同时加入到结果中
+                lasth = h;
+                res.push_back( {b.first, h} );
+            }
+        }
+        return res;
     }
 };
+
