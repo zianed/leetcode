@@ -36,7 +36,7 @@ public:
         priority_queue<int> qPath;
         int time = 0;
         for (auto &course : courses) {
-            if (time + course[0] < course[1]) {
+            if (time + course[0] <= course[1]) {
                 // 时间没有结束，修这门课
                 time += course[0];
                 qPath.push(course[0]);
