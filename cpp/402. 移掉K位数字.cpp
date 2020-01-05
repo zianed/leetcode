@@ -26,11 +26,27 @@ num 不会包含任何前导零。
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 **/
 
-
+// 单调栈
+// 有比他小的元素，则要把当前元素给删除掉。
 class Solution {
 public:
     string removeKdigits(string num, int k) {
-        
+        string res;
+        int len = num.size();
+        int m = len - k;
+        for (char c : num) {
+            while (k != 0 && res.size() != 0 && res.back() > c) {
+                res.pop_back();
+                --k;
+            }
+            res.push_back(c);
+            // cout << c << "," << k << "," << res << endl;
+        }
+        res.resize(m);
+        while (!res.empty() && res[0] == '0') {
+            res.erase(res.begin());
+        }
+        return res.empty() ? "0" : res;
     }
 };
 
