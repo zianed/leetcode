@@ -16,12 +16,12 @@
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 **/
 
-//暴力破解 - 超时
+// 暴力破解 - 超时
 class Solution {
 public:
     vector<int> countSmaller(vector<int>& nums) {
         int len = nums.size();
-        vector<int> res(len, 0);
+[        vector<int> res(len, 0);
         for (int i = len - 2; i >= 0; i--) {
             for (int j = i + 1; j < len; j++) {
                 if (nums[j] < nums[i]) {
@@ -33,3 +33,23 @@ public:
     }
 };
 
+// 插入排序，插入对应位置
+class Solution {
+public:
+    vector<int> countSmaller(vector<int>& nums) {
+        int len = nums.size();
+        vector<int> res(len, 0);
+        vector<int> temp;
+        for (int i = len - 1; i >= 0; i--) {
+            auto it = lower_bound(temp.begin(), temp.end(), nums[i]);
+            res[i] = it - temp.begin();
+            temp.insert(it, nums[i]);
+            // cout << "temp: ";
+            // for (int j = 0; j < temp.size(); j++) {
+            //     cout << temp[j] << ", ";
+            // }
+            // cout << endl;
+        }
+        return res;
+    }
+};

@@ -42,3 +42,33 @@ public:
 };
 
 // 另外一种问法是有多少种组合？
+// dp[i][j] = dp[i - 1][j] + dp[i][j - coins[i]]
+class Solution {
+public:
+    int coinChange(vector<int>& coins, int amount) {
+        if (coins.empty() || amount < 0) {
+            return 0;
+        }
+        int len = coins.size();
+        vector<vector<int>> dp(m, vector<int>(amount + 1, 0));
+        // 不用任何硬币可以组成0
+        for (int i = 0; i < len; i++) {
+            dp[i][0] = 1;
+        }
+        // coins[0] 可以组成的是他的倍数
+        for (int j = 1; coins[0] * j <= amount; j++) {
+            dp[0][coins[0] * j] = 1;
+        }
+        for (int i = 1; i < len; i++) {
+            for (int i = j; j <= amount; j++) {
+                // 不使用当前硬币
+                dp[i][j] = dp[i - 1][j];
+                if (j - coins[i] >= 0) {
+                    // 使用当前硬币
+                    dp[i][j] += dp[i][j - coins[i]];
+                }
+            }
+        }
+        return dp[len - 1][amount];
+    }
+};
