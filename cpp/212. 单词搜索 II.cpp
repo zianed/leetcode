@@ -33,6 +33,9 @@ class TrieNode {
 public:
     TrieNode()
     {
+        for (int i = 0; i < children.size(); i++) {
+            children[i] = nullptr;
+        }
     }
 
     ~TrieNode()
@@ -48,62 +51,100 @@ public:
     vector<TrieNode*> children{26};
 };
 
+class Trie {
+public:
+    Trie() {
+        root = new TrieNode();
+    }
+
+    ~Trie() {
+        delete root;
+    }
+    void insert(string word) {
+        TrieNode* parent = root;
+        for (int i = 0; i < word.size(); i++) {
+            int index = word[i] - 'a';
+            if (parent->children[index] == nullptr) {
+                TrieNode* node = new TrieNode();
+                parent->children[index] = node;
+            }
+            parent = parent->children[index];
+        }
+        parent->s = word;
+    }
+
+    bool prefix(string word) {
+        TrieNode* parent = root;
+        for (int i = 0; i < word.size(); i++) {
+            int index = word[i] - 'a';
+            if (parent->children[index] == nullptr) {
+                return false;
+            }
+            parent = parent->children[index];
+        }
+        return true;
+    }
+
+    bool find(string word) {
+        TrieNode* parent = root;
+        for (int i = 0; i < word.size(); i++) {
+            int index = word[i] - 'a';
+            if (parent->children[index] == nullptr) {
+                return false;
+            }
+            parent = parent->children[index];
+        }
+        return !parent->s.empty();
+    }
+private:
+    TrieNode *root;
+};
+
+
 class Solution {
 public:
     vector<string> findWords(vector<vector<char>>& board, vector<string>& words) {
-        // tire tree
-        TrieNode *root = new TrieNode();
+        // trie tree
         for (string &word : words) {
-            TrieNode* parent = root;
-            for (int i = 0; i < word.size(); i++) {
-                int index = word[i] - 'a';
-                if (parent->children[index] == nullptr) {
-                    TrieNode* node = new TrieNode();
-                }
-                parent = parent->children[index];
-            }
-            parent->s = word;
-            // cout << "[" << word << "]" << endl;
+            trie.insert(word);
         }
         int m = board.size();
         int n = board[0].size();
-        vector<vector<bool>> visited(m, vector<bool>(n, false));
         vector<string> res;
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
-                cout << ":" << i << "," << j << "=" << board[i][j] << endl;
-                backtrack(i, j, m, n, board, visited, res, root);
+                vector<vector<bool>> visited(m, vector<bool>(n, false));
+                string w;
+                backtrack(i, j, m, n, board, visited, res, w);
             }
         }
         return res;
     }
-    
-    void backtrack(int i, int j, int m, int n, vector<vector<char>>& board, vector<vector<bool>> &visited, vector<string> &res, TrieNode *node) {
-        if (i < 0 || i >= m || j < 0 || j >= n || visited[i][j] || node == nullptr) {
+
+    void backtrack(int i, int j, int m, int n, vector<vector<char>>& board, vector<vector<bool>> &visited, vector<string> &res, string w) {
+        if (i < 0 || i >= m || j < 0 || j >= n || visited[i][j]) {
             return;
         }
-        cout << "-" << i << "," << j << "=" << board[i][j] << endl;
-        int index = board[i][j] - 'a';
-        if (node->children[index] == nullptr) {
+        w.append(1, board[i][j]);
+        // cout << "[+]" << i << "," << j << "=" << w << endl;
+
+        if (!trie.prefix(w)) {
             return;
         }
-        TrieNode *nextNode = node->children[index];
-        if (nextNode == nullptr) {
-            return;
-        }
-        cout << "-" << i << "," << j << "==" << nextNode->s << endl;
-        if (!nextNode->s.empty()) {
-            auto it = find(res.begin(), res.end(), nextNode->s);
+        if (trie.find(w)) {
+            auto it = find(res.begin(), res.end(), w);
             if (it == res.end()) {
-                res.push_back(nextNode->s);
+                res.push_back(w);
             }
-            return;
         }
+        // cout << "[-]" << i << "," << j << "=" << w << endl;
         visited[i][j] = true;
-        backtrack(i + 1, j, m, n, board, visited, res, nextNode);
-        backtrack(i - 1, j, m, n, board, visited, res, nextNode);
-        backtrack(i, j + 1, m, n, board, visited, res, nextNode);
-        backtrack(i, j - 1, m, n, board, visited, res, nextNode);
+        backtrack(i + 1, j, m, n, board, visited, res, w);
+        backtrack(i - 1, j, m, n, board, visited, res, w);
+        backtrack(i, j + 1, m, n, board, visited, res, w);
+        backtrack(i, j - 1, m, n, board, visited, res, w);
         visited[i][j] = false;
     }
+private:
+    Trie trie;
 };
